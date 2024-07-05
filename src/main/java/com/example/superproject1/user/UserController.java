@@ -1,5 +1,6 @@
 package com.example.superproject1.user;
 
+import com.example.superproject1.repository.entity.User;
 import com.example.superproject1.user.dto.LoginRequest;
 import com.example.superproject1.user.dto.LoginResponse;
 import com.example.superproject1.user.dto.SignupRequest;
