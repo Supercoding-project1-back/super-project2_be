@@ -1,5 +1,6 @@
 package com.example.superproject1.user;
 
+import com.example.superproject1.repository.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

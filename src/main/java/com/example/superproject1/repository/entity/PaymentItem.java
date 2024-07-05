@@ -1,4 +1,4 @@
-package com.example.superproject1.user;
+package com.example.superproject1.repository.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,14 +12,16 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class PaymentItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String email;
+    @ManyToOne
+    @JoinColumn(name = "item_id")
+    private Item item;
 
-    @Column(nullable = false)
-    private String password;
+    @ManyToOne
+    @JoinColumn(name = "payment_id")
+    private Payment payment;
 }
