@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class SecurityConfig implements WebMvcConfigurer {
     private final UserAuthArgumentResolver userAuthArgumentResolver;
+    
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers){
