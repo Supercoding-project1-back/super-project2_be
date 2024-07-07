@@ -1,4 +1,4 @@
-package com.example.superproject1.security;
+package com.example.superproject1.config.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

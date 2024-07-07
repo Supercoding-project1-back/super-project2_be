@@ -1,6 +1,6 @@
 package com.example.superproject1.web.filters;
 
-import com.example.superproject1.security.JwtTokenProvider;
+import com.example.superproject1.config.security.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

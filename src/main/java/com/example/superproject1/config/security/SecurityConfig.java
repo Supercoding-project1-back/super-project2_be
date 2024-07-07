@@ -1,4 +1,4 @@
-package com.example.superproject1.security;
+package com.example.superproject1.config.security;
 
 import com.example.superproject1.web.filters.JwtFilter;
 import lombok.RequiredArgsConstructor;

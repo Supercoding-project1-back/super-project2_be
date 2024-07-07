@@ -6,8 +6,11 @@ import com.example.superproject1.repository.entity.Sale;
 import com.example.superproject1.repository.users.userRoles.UserRoles;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -20,6 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,6 +49,10 @@ public class User {
 
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
+
+    @CreatedDate
+    @Column(name = "create_at")
+    private LocalDateTime createAt;
 
     @OneToMany(mappedBy = "user")
     private Collection<UserRoles> userRoles;

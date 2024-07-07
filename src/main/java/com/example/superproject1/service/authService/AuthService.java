@@ -6,7 +6,7 @@ import com.example.superproject1.repository.users.userRoles.Roles;
 import com.example.superproject1.repository.users.userRoles.RolesRepository;
 import com.example.superproject1.repository.users.userRoles.UserRoles;
 import com.example.superproject1.repository.users.userRoles.UserRolesRepository;
-import com.example.superproject1.security.JwtTokenProvider;
+import com.example.superproject1.config.security.JwtTokenProvider;
 import com.example.superproject1.service.exceptions.BadRequestException;
 import com.example.superproject1.service.exceptions.ConflictException;
 import com.example.superproject1.service.exceptions.CustomBadCredentialsException;
@@ -56,6 +56,8 @@ public class AuthService {
             throw new ConflictException("이미 입력하신 " + email + " 이메일로 가입된 계정이 있습니다.", email);
         } else if(signupRequest.getName().length()>30){
             throw new BadRequestException("이름은 30자리 이하여야 합니다.", signupRequest.getName());
+        }else if(!signupRequest.getPhoneNumber().matches("01\\d{9}")){
+            throw new BadRequestException("전화번호 형식이 올바르지 않습니다.", signupRequest.getPhoneNumber());
         } else if(userRepository.existsByPhoneNumber(signupRequest.getPhoneNumber())){
             throw new ConflictException("이미 입력하신 "+signupRequest.getPhoneNumber()+" 전화번호로 가입된 계정이 있습니다.",signupRequest.getPhoneNumber());
         }else if(!password.matches("^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z\\d]+$")
@@ -63,6 +65,8 @@ public class AuthService {
             throw new BadRequestException("비밀번호는 8자 이상 20자 이하 숫자와 영문소문자 조합 이어야 합니다.",password);
         } else if(!signupRequest.getPasswordConfirm().equals(password)) {
             throw new BadRequestException("비밀번호와 비밀번호 확인이 같지 않습니다.","password : "+password+", password_confirm : "+signupRequest.getPasswordConfirm());
+        } else if(!(signupRequest.getGender().equals("남성") || signupRequest.getGender().equals("여성"))){
+            throw new BadRequestException("성별 형식이 올바르지 않습니다.", signupRequest.getGender());
         }
 
         signupRequest.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
