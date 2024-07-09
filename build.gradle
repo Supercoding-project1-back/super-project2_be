@@ -38,7 +38,7 @@ dependencies {
     implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
 
     // mariaDB
-    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+    //runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
     runtimeOnly 'mysql:mysql-connector-java:8.0.26'
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
