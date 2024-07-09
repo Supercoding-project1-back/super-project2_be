@@ -39,7 +39,7 @@ dependencies {
 
     // mariaDB
     //runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
-    implementation 'mysql:mysql-connector-java:8.0.28'
+    runtimeOnly 'mysql:mysql-connector-java:8.0.28'
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
