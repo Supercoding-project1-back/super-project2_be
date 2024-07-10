@@ -3,6 +3,8 @@ package com.example.superproject1.web.dto.item;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 @Builder
 public class ItemResponse {
@@ -15,4 +17,5 @@ public class ItemResponse {
     private String description;
     private String category;
     private int deliveryFee;
+    private List<FileResponse> files;
 }

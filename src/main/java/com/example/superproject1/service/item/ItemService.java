@@ -1,7 +1,10 @@
 package com.example.superproject1.service.item;
 
+import com.example.superproject1.repository.item.File;
 import com.example.superproject1.repository.item.Item;
 import com.example.superproject1.repository.item.ItemRepository;
+import com.example.superproject1.web.dto.item.FileRequest;
+import com.example.superproject1.web.dto.item.FileResponse;
 import com.example.superproject1.web.dto.item.ItemRequest;
 import com.example.superproject1.web.dto.item.ItemResponse;
 import lombok.RequiredArgsConstructor;
@@ -84,5 +87,22 @@ public class ItemService {
         item.setDescription(itemRequest.getDescription());
         item.setCategory(itemRequest.getCategory());
         item.setDeliveryFee(itemRequest.getDeliveryFee());
+    }
+
+    private FileResponse convertToFileResponse(File file) {
+        return FileResponse.builder()
+                .id(file.getId())
+                .fileName(file.getFileName())
+                .fileSize(file.getFileSize())
+                .fileExtension(file.getFileExtension())
+                .build();
+    }
+
+    private File convertToFileEntity(FileRequest fileRequest) {
+        return File.builder()
+                .fileName(fileRequest.getFileName())
+                .fileSize(fileRequest.getFileSize())
+                .fileExtension(fileRequest.getFileExtension())
+                .build();
     }
 }

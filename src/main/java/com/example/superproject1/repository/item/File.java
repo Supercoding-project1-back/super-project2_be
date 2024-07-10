@@ -29,6 +29,6 @@ public class File {
     private String fileExtension;
 
     @ManyToOne
-    @JoinColumn(name = "product_key")
+    @JoinColumn(name = "item_key")
     private Item item;
 }
