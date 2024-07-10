@@ -1,4 +1,4 @@
-package com.example.superproject1.repository.entity;
+package com.example.superproject1.repository.payment;
 
 import com.example.superproject1.repository.users.User;
 import jakarta.persistence.*;
