@@ -3,9 +3,10 @@ package com.example.superproject1.repository.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Entity
-@Table(name = "payment_items")
+@Table(name = "files")
 @Getter
 @Setter
 @Builder
@@ -13,19 +14,21 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @AllArgsConstructor
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class PaymentItem {
+public class File {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private int count;
+    @Column(name = "file_name", nullable = false)
+    private String fileName;
+
+    @Column(name = "file_size", nullable = false)
+    private int fileSize;
+
+    @Column(name = "file_extension", nullable = false)
+    private String fileExtension;
 
     @ManyToOne
-    @JoinColumn(name = "item_id")
+    @JoinColumn(name = "product_key")
     private Item item;
-
-    @ManyToOne
-    @JoinColumn(name = "payment_id")
-    private Payment payment;
 }
