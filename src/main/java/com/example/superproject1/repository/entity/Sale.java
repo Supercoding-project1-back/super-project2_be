@@ -1,5 +1,6 @@
 package com.example.superproject1.repository.entity;
 
+import com.example.superproject1.repository.item.Item;
 import com.example.superproject1.repository.users.User;
 import jakarta.persistence.*;
 import lombok.*;
