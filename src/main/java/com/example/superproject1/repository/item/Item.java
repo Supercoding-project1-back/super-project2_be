@@ -1,6 +1,6 @@
 package com.example.superproject1.repository.item;
 
-import com.example.superproject1.repository.entity.CartItem;
+import com.example.superproject1.repository.cart.CartItem;
 import com.example.superproject1.repository.payment.PaymentItem;
 import com.example.superproject1.repository.entity.Sale;
 import jakarta.persistence.*;

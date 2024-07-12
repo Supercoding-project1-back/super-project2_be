@@ -1,4 +1,4 @@
-package com.example.superproject1.repository.entity;
+package com.example.superproject1.repository.cart;
 
 import com.example.superproject1.repository.item.Item;
 import jakarta.persistence.*;
@@ -14,6 +14,9 @@ public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column()
+    private Integer count;
 
     @ManyToOne
     @JoinColumn(name = "item_id")

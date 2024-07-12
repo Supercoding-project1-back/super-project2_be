@@ -1,6 +1,6 @@
 package com.example.superproject1.repository.users;
 
-import com.example.superproject1.repository.entity.Cart;
+import com.example.superproject1.repository.cart.Cart;
 import com.example.superproject1.repository.payment.Payment;
 import com.example.superproject1.repository.entity.Sale;
 import com.example.superproject1.repository.users.userRoles.UserRoles;
