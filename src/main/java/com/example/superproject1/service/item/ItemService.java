@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,7 +108,6 @@ public class ItemService {
         // 기존 이미지 삭제 후 새 이미지 업로드
         fileService.deleteAllFiles(item);
         itemRepository.save(item);
-        System.out.println("!! " + item.getFiles().size());
         updateFileFromRequest(item, itemRequest);
 
         // item 저장
@@ -126,8 +126,9 @@ public class ItemService {
 
     // 사진 업로드 및 연관관계
     private void updateFileFromRequest(Item item, ItemRequest itemRequest) {
-        if(itemRequest.getFile1() != null) item.getFiles().add(fileService.createFile(itemRequest.getFile1(), item));
-        if(itemRequest.getFile2() != null) item.getFiles().add(fileService.createFile(itemRequest.getFile2(), item));
+        for(MultipartFile file : itemRequest.getFile()) {
+            item.getFiles().add(fileService.createFile(file, item));
+        }
     }
 
 //    private File convertToFileEntity(FileRequest fileRequest) {

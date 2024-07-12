@@ -36,9 +36,6 @@ public class ItemRequest {
     @Schema(description = "물품 배송비", example = "3500")
     private int deliveryFee;
 
-    @Parameter(description = "물품 이미지 파일1, MultipartFile 타입")
-    private MultipartFile file1;
-
-    @Parameter(description = "물품 이미지 파일2, MultipartFile 타입")
-    private MultipartFile file2;
+    @Parameter(description = "물품 이미지 파일, MultipartFile 타입")
+    private List<MultipartFile> file;
 }
