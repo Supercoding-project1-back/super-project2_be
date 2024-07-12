@@ -1,8 +1,8 @@
 package com.example.superproject1.repository.users;
 
+import com.example.superproject1.repository.item.Item;
 import com.example.superproject1.repository.cart.Cart;
 import com.example.superproject1.repository.payment.Payment;
-import com.example.superproject1.repository.entity.Sale;
 import com.example.superproject1.repository.users.userRoles.UserRoles;
 import jakarta.persistence.*;
 import lombok.*;
@@ -58,10 +58,10 @@ public class User {
     private Collection<UserRoles> userRoles;
 
     @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    private List<Sale> sales = new ArrayList<>();
+    private List<Payment> payments = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    private List<Payment> payments = new ArrayList<>();
+    private List<Item> items = new ArrayList<>();
 
     @OneToOne(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private Cart cart;

@@ -3,7 +3,7 @@ package com.example.superproject1.service.item;
 import com.example.superproject1.repository.item.File;
 import com.example.superproject1.repository.item.Item;
 import com.example.superproject1.repository.item.ItemRepository;
-import com.example.superproject1.web.dto.item.FileRequest;
+import com.example.superproject1.repository.users.User;
 import com.example.superproject1.web.dto.item.FileResponse;
 import com.example.superproject1.web.dto.item.ItemRequest;
 import com.example.superproject1.web.dto.item.ItemResponse;
@@ -11,16 +11,24 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ItemService {
     private final ItemRepository itemRepository;
+    private final FileService fileService;
 
     public Page<ItemResponse> getAllItems(Pageable pageable) {
         return itemRepository.findAllByCountGreaterThan(0, pageable)
+                .map(this::convertToItemResponse);
+    }
+
+    public Page<ItemResponse> getAllItemsByUser(User user, Pageable pageable) {
+        return itemRepository.findAllByUser(user, pageable)
                 .map(this::convertToItemResponse);
     }
 
@@ -29,18 +37,33 @@ public class ItemService {
                 .map(this::convertToItemResponse);
     }
 
-    public ItemResponse createItem(ItemRequest itemRequest) {
+    public ItemResponse createItem(ItemRequest itemRequest, User user) {
         Item item = convertToItemEntity(itemRequest);
+
+        // 이미지 저장
+        updateFileFromRequest(item, itemRequest);
+
+        // 연관관계 형성
+        item.setUser(user);
+
+        // item 저장
         itemRepository.save(item);
+
         return convertToItemResponse(item);
     }
 
-    public ItemResponse updateItem(Long id, ItemRequest itemRequest) {
+    public ItemResponse updateItem(Long id, ItemRequest itemRequest, User user) {
         Optional<Item> optionalItem = itemRepository.findById(id);
         if (optionalItem.isPresent()) {
             Item item = optionalItem.get();
+
+            // user 검증
+            if (!user.getId().equals(item.getUser().getId())) {
+                throw new IllegalArgumentException("아이템 업데이트 실패: 유저가 아닙니다.");
+            }
+
+            // item 수정
             updateItemFromRequest(item, itemRequest);
-            itemRepository.save(item);
             return convertToItemResponse(item);
         } else {
             throw new IllegalArgumentException("아이템 업데이트 실패: 아이템을 찾을 수 없습니다.");
@@ -62,6 +85,7 @@ public class ItemService {
                 .description(item.getDescription())
                 .category(item.getCategory())
                 .deliveryFee(item.getDeliveryFee())
+                .files(item.getFiles().stream().map(this::convertToFileResponse).toList())
                 .build();
     }
 
@@ -75,6 +99,9 @@ public class ItemService {
                 .description(itemRequest.getDescription())
                 .category(itemRequest.getCategory())
                 .deliveryFee(itemRequest.getDeliveryFee())
+                .cartItems(new ArrayList<>())
+                .paymentItems(new ArrayList<>())
+                .files(new ArrayList<>())
                 .build();
     }
 
@@ -87,6 +114,14 @@ public class ItemService {
         item.setDescription(itemRequest.getDescription());
         item.setCategory(itemRequest.getCategory());
         item.setDeliveryFee(itemRequest.getDeliveryFee());
+
+        // 기존 이미지 삭제 후 새 이미지 업로드
+        fileService.deleteAllFiles(item);
+        itemRepository.save(item);
+        updateFileFromRequest(item, itemRequest);
+
+        // item 저장
+        itemRepository.save(item);
     }
 
     private FileResponse convertToFileResponse(File file) {
@@ -95,14 +130,23 @@ public class ItemService {
                 .fileName(file.getFileName())
                 .fileSize(file.getFileSize())
                 .fileExtension(file.getFileExtension())
+                .fileUrl(file.getFileUrl())
                 .build();
     }
 
-    private File convertToFileEntity(FileRequest fileRequest) {
-        return File.builder()
-                .fileName(fileRequest.getFileName())
-                .fileSize(fileRequest.getFileSize())
-                .fileExtension(fileRequest.getFileExtension())
-                .build();
+    // 사진 업로드 및 연관관계
+    private void updateFileFromRequest(Item item, ItemRequest itemRequest) {
+        for(MultipartFile file : itemRequest.getFile()) {
+            item.getFiles().add(fileService.createFile(file, item));
+        }
     }
+
+//    private File convertToFileEntity(FileRequest fileRequest) {
+//        return File.builder()
+//                .fileName(fileRequest.getFileName())
+//                .fileSize(fileRequest.getFileSize())
+//                .fileExtension(fileRequest.getFileExtension())
+//                .fileUrl(fileRequest.getFileUrl())
+//                .build();
+//    }
 }

@@ -27,3 +27,7 @@ spring:
         format_sql: true
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
+
+# 이미지 파일 저장 경로
+file:
+  upload-dir: src/main/resources/static/images/
