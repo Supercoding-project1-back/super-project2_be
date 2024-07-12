@@ -2,7 +2,7 @@ package com.example.superproject1.repository.item;
 
 import com.example.superproject1.repository.entity.CartItem;
 import com.example.superproject1.repository.payment.PaymentItem;
-import com.example.superproject1.repository.entity.Sale;
+import com.example.superproject1.repository.users.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -48,8 +48,9 @@ public class Item {
     @Column(name = "delivery_fee", nullable = false)
     private int deliveryFee;
 
-    @OneToMany(mappedBy = "item", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    private List<Sale> sales = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @OneToMany(mappedBy = "item", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<PaymentItem> paymentItems = new ArrayList<>();
@@ -57,7 +58,7 @@ public class Item {
     @OneToMany(mappedBy = "item", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<CartItem> cartItems = new ArrayList<>();
 
-    @OneToMany(mappedBy = "item", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<File> files = new ArrayList<>();
 }
 

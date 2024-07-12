@@ -1,6 +1,5 @@
 package com.example.superproject1.service.item;
 
-import com.example.superproject1.repository.entity.Sale;
 import com.example.superproject1.repository.item.File;
 import com.example.superproject1.repository.item.Item;
 import com.example.superproject1.repository.item.ItemRepository;
@@ -38,15 +37,10 @@ public class ItemService {
         Item item = convertToItemEntity(itemRequest);
 
         // 이미지 저장
-        if(itemRequest.getFile1() != null) item.getFiles().add(fileService.createFile(itemRequest.getFile1(), item));
-        if(itemRequest.getFile2() != null) item.getFiles().add(fileService.createFile(itemRequest.getFile2(), item));
+        updateFileFromRequest(item, itemRequest);
 
         // 연관관계 형성
-        Sale sale = new Sale().builder()
-                .item(item)
-                .user(user)
-                .build();
-        item.getSales().add(sale);
+        item.setUser(user);
 
         // item 저장
         itemRepository.save(item);
@@ -54,12 +48,11 @@ public class ItemService {
         return convertToItemResponse(item);
     }
 
-    public ItemResponse updateItem(Long id, ItemRequest itemRequest) {
+    public ItemResponse updateItem(Long id, ItemRequest itemRequest, User user) {
         Optional<Item> optionalItem = itemRepository.findById(id);
         if (optionalItem.isPresent()) {
             Item item = optionalItem.get();
             updateItemFromRequest(item, itemRequest);
-            itemRepository.save(item);
             return convertToItemResponse(item);
         } else {
             throw new IllegalArgumentException("아이템 업데이트 실패: 아이템을 찾을 수 없습니다.");
@@ -95,7 +88,6 @@ public class ItemService {
                 .description(itemRequest.getDescription())
                 .category(itemRequest.getCategory())
                 .deliveryFee(itemRequest.getDeliveryFee())
-                .sales(new ArrayList<>())
                 .cartItems(new ArrayList<>())
                 .paymentItems(new ArrayList<>())
                 .files(new ArrayList<>())
@@ -111,6 +103,15 @@ public class ItemService {
         item.setDescription(itemRequest.getDescription());
         item.setCategory(itemRequest.getCategory());
         item.setDeliveryFee(itemRequest.getDeliveryFee());
+
+        // 기존 이미지 삭제 후 새 이미지 업로드
+        fileService.deleteAllFiles(item);
+        itemRepository.save(item);
+        System.out.println("!! " + item.getFiles().size());
+        updateFileFromRequest(item, itemRequest);
+
+        // item 저장
+        itemRepository.save(item);
     }
 
     private FileResponse convertToFileResponse(File file) {
@@ -122,6 +123,13 @@ public class ItemService {
                 .fileUrl(file.getFileUrl())
                 .build();
     }
+
+    // 사진 업로드 및 연관관계
+    private void updateFileFromRequest(Item item, ItemRequest itemRequest) {
+        if(itemRequest.getFile1() != null) item.getFiles().add(fileService.createFile(itemRequest.getFile1(), item));
+        if(itemRequest.getFile2() != null) item.getFiles().add(fileService.createFile(itemRequest.getFile2(), item));
+    }
+
 //    private File convertToFileEntity(FileRequest fileRequest) {
 //        return File.builder()
 //                .fileName(fileRequest.getFileName())

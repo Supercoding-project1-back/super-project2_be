@@ -75,4 +75,15 @@ public class FileService {
     private String getFileExtension(String fileName) {
         return fileName.substring(fileName.lastIndexOf("."));
     }
+
+    // 파일 삭제
+    public void deleteFile(Long id) {
+        File file = fileRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        fileRepository.delete(file);
+    }
+
+    public void deleteAllFiles(Item item) {
+        fileRepository.deleteAll(item.getFiles());
+        item.getFiles().clear();
+    }
 }
