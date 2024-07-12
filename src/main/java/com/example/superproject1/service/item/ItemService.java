@@ -1,8 +1,10 @@
 package com.example.superproject1.service.item;
 
+import com.example.superproject1.repository.entity.Sale;
 import com.example.superproject1.repository.item.File;
 import com.example.superproject1.repository.item.Item;
 import com.example.superproject1.repository.item.ItemRepository;
+import com.example.superproject1.repository.users.User;
 import com.example.superproject1.web.dto.item.FileRequest;
 import com.example.superproject1.web.dto.item.FileResponse;
 import com.example.superproject1.web.dto.item.ItemRequest;
@@ -12,12 +14,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ItemService {
     private final ItemRepository itemRepository;
+    private final FileService fileService;
 
     public Page<ItemResponse> getAllItems(Pageable pageable) {
         return itemRepository.findAllByCountGreaterThan(0, pageable)
@@ -29,9 +34,23 @@ public class ItemService {
                 .map(this::convertToItemResponse);
     }
 
-    public ItemResponse createItem(ItemRequest itemRequest) {
+    public ItemResponse createItem(ItemRequest itemRequest, User user) {
         Item item = convertToItemEntity(itemRequest);
+
+        // 이미지 저장
+        if(itemRequest.getFile1() != null) item.getFiles().add(fileService.createFile(itemRequest.getFile1(), item));
+        if(itemRequest.getFile2() != null) item.getFiles().add(fileService.createFile(itemRequest.getFile2(), item));
+
+        // 연관관계 형성
+        Sale sale = new Sale().builder()
+                .item(item)
+                .user(user)
+                .build();
+        item.getSales().add(sale);
+
+        // item 저장
         itemRepository.save(item);
+
         return convertToItemResponse(item);
     }
 
@@ -62,6 +81,7 @@ public class ItemService {
                 .description(item.getDescription())
                 .category(item.getCategory())
                 .deliveryFee(item.getDeliveryFee())
+                .files(item.getFiles().stream().map(this::convertToFileResponse).toList())
                 .build();
     }
 
@@ -75,6 +95,10 @@ public class ItemService {
                 .description(itemRequest.getDescription())
                 .category(itemRequest.getCategory())
                 .deliveryFee(itemRequest.getDeliveryFee())
+                .sales(new ArrayList<>())
+                .cartItems(new ArrayList<>())
+                .paymentItems(new ArrayList<>())
+                .files(new ArrayList<>())
                 .build();
     }
 
@@ -95,14 +119,15 @@ public class ItemService {
                 .fileName(file.getFileName())
                 .fileSize(file.getFileSize())
                 .fileExtension(file.getFileExtension())
+                .fileUrl(file.getFileUrl())
                 .build();
     }
-
-    private File convertToFileEntity(FileRequest fileRequest) {
-        return File.builder()
-                .fileName(fileRequest.getFileName())
-                .fileSize(fileRequest.getFileSize())
-                .fileExtension(fileRequest.getFileExtension())
-                .build();
-    }
+//    private File convertToFileEntity(FileRequest fileRequest) {
+//        return File.builder()
+//                .fileName(fileRequest.getFileName())
+//                .fileSize(fileRequest.getFileSize())
+//                .fileExtension(fileRequest.getFileExtension())
+//                .fileUrl(fileRequest.getFileUrl())
+//                .build();
+//    }
 }

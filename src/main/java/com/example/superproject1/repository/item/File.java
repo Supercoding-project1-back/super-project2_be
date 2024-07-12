@@ -6,7 +6,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Entity
-@Table(name = "files")
 @Getter
 @Setter
 @Builder
@@ -23,10 +22,13 @@ public class File {
     private String fileName;
 
     @Column(name = "file_size", nullable = false)
-    private int fileSize;
+    private long fileSize;
 
     @Column(name = "file_extension", nullable = false)
     private String fileExtension;
+
+    @Column(name = "file_url", nullable = false)
+    private String fileUrl;
 
     @ManyToOne
     @JoinColumn(name = "item_key")
