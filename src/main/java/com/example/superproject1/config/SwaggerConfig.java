@@ -21,7 +21,6 @@ public class SwaggerConfig {
                 .name("Token"));
 
         return new OpenAPI()
-                .components(new Components())
                 .info(new Info()
                         .title("Super Project 2 API")
                         .description("Super Project 2의 API 문서입니다."))

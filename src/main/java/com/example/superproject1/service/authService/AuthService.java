@@ -11,10 +11,11 @@ import com.example.superproject1.service.exceptions.BadRequestException;
 import com.example.superproject1.service.exceptions.ConflictException;
 import com.example.superproject1.service.exceptions.CustomBadCredentialsException;
 import com.example.superproject1.service.exceptions.NotFoundException;
-import com.example.superproject1.web.dto.auth.AuthResponseDto;
+import com.example.superproject1.web.dto.auth.AuthResponse;
 import com.example.superproject1.web.dto.auth.LoginRequest;
 import com.example.superproject1.web.dto.auth.SignupRequest;
 import com.example.superproject1.web.dto.auth.SignupResponse;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -41,8 +42,29 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
+    @PostConstruct
+    private void insertRoleUserAndRoleAdminToNewDb(){
+        //db를 새로 생성할 때 roles(ROLE_USER)초기값 생성
+        Roles roleUser = rolesRepository.findByName("ROLE_USER");
+
+        if(roleUser == null){
+            rolesRepository.save(Roles.builder()
+                    .name("ROLE_USER")
+                    .build());
+        }
+
+        //db를 새로 생성할 때 roles(ROLE_ADMIN)초기값 생성
+        Roles roleAdmin = rolesRepository.findByName("ROLE_ADMIN");
+
+        if(roleAdmin == null){
+            rolesRepository.save(Roles.builder()
+                    .name("ROLE_ADMIN")
+                    .build());
+        }
+    }
+
     @Transactional
-    public AuthResponseDto signUp(SignupRequest signupRequest){
+    public AuthResponse signUp(SignupRequest signupRequest){
         String email = signupRequest.getEmail();
         String password = signupRequest.getPassword();
 
@@ -97,7 +119,7 @@ public class AuthService {
                 .name(user.getName())
                 .build();
 
-        return new AuthResponseDto(HttpStatus.OK.value(), user.getName() + "님 회원 가입 완료 되었습니다.", signupResponse);
+        return new AuthResponse(HttpStatus.OK.value(), user.getName() + "님 회원 가입 완료 되었습니다.", signupResponse);
     }
 
     public List<Object> login(LoginRequest request) {
@@ -128,8 +150,8 @@ public class AuthService {
                 .name(user.getName())
                 .build();
 
-        AuthResponseDto authResponseDto = new AuthResponseDto(HttpStatus.OK.value(), "로그인에 성공 하였습니다.", signupResponse);
+        AuthResponse authResponse = new AuthResponse(HttpStatus.OK.value(), "로그인에 성공 하였습니다.", signupResponse);
 
-        return Arrays.asList(jwtTokenProvider.createToken(user.getEmail()), authResponseDto);
+        return Arrays.asList(jwtTokenProvider.createToken(user.getEmail()), authResponse);
     }
 }
