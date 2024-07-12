@@ -1,7 +1,7 @@
 package com.example.superproject1.repository.users;
 
-import com.example.superproject1.repository.entity.Cart;
 import com.example.superproject1.repository.item.Item;
+import com.example.superproject1.repository.cart.Cart;
 import com.example.superproject1.repository.payment.Payment;
 import com.example.superproject1.repository.users.userRoles.UserRoles;
 import jakarta.persistence.*;
@@ -32,7 +32,7 @@ public class User {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "phone_number", unique = true)
+    @Column(name = "phone_number", nullable = false, unique = true)
     private String phoneNumber;
 
     @Column(name = "email", unique = true, nullable = false)
