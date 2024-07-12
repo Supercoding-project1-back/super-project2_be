@@ -47,6 +47,7 @@ public class ItemController {
             ))
     @PostMapping
     public ResponseEntity<ItemResponse> createItem(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                   @Parameter(description = "JWT 토큰", required = true) @RequestHeader("Token") String jwt,
                                                    @io.swagger.v3.oas.annotations.parameters.RequestBody(
                                                            description = "새로 생성할 Item 정보",
                                                            required = true,
@@ -59,6 +60,7 @@ public class ItemController {
     @Operation(summary = "기존 Item 정보 수정", description = "해당 id를 가진 기존의 Item의 정보를 업데이트한다. \n file1과 file2는 item의 이미지 사진으로 MultipartFile 타입이다")
     @PutMapping("/{id}")
     public ResponseEntity<ItemResponse> updateItem(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                   @Parameter(description = "JWT 토큰", required = true) @RequestHeader("Token") String jwt,
                                                    @Parameter(description = "경로 변수로 입력된 id값") @PathVariable Long id,
                                                    @io.swagger.v3.oas.annotations.parameters.RequestBody(
                                                            description = "수정할 Item 정보",
@@ -72,7 +74,8 @@ public class ItemController {
     @Operation(summary = "유저가 팔고 있는 Item 조회", description = "유저가 팔고 있는 Item의 정보를 리스트를 페이지네이션해서 전달한다.")
     @GetMapping("/user")
     public ResponseEntity<Page<ItemResponse>> getItem(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                                @Parameter(description = "페이지네이션 정보") Pageable pageable) {
+                                                      @Parameter(description = "JWT 토큰", required = true) @RequestHeader("Token") String jwt,
+                                                      @Parameter(description = "페이지네이션 정보") Pageable pageable) {
         Page<ItemResponse> response = itemService.getAllItemsByUser(findUserByToken.findUser(customUserDetails), pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
