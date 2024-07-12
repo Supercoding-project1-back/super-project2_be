@@ -69,6 +69,14 @@ public class ItemController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @Operation(summary = "유저가 팔고 있는 Item 조회", description = "유저가 팔고 있는 Item의 정보를 리스트를 페이지네이션해서 전달한다.")
+    @GetMapping("/user")
+    public ResponseEntity<Page<ItemResponse>> getItem(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                @Parameter(description = "페이지네이션 정보") Pageable pageable) {
+        Page<ItemResponse> response = itemService.getAllItemsByUser(findUserByToken.findUser(customUserDetails), pageable);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @Operation(summary = "Item 삭제", description = "해당 id를 가진 Item을 삭제한다.")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteItem(@Parameter(description = "경로 변수로 입력된 id값") @PathVariable Long id) {

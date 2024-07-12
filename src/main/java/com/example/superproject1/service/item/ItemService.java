@@ -4,7 +4,6 @@ import com.example.superproject1.repository.item.File;
 import com.example.superproject1.repository.item.Item;
 import com.example.superproject1.repository.item.ItemRepository;
 import com.example.superproject1.repository.users.User;
-import com.example.superproject1.web.dto.item.FileRequest;
 import com.example.superproject1.web.dto.item.FileResponse;
 import com.example.superproject1.web.dto.item.ItemRequest;
 import com.example.superproject1.web.dto.item.ItemResponse;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,6 +24,11 @@ public class ItemService {
 
     public Page<ItemResponse> getAllItems(Pageable pageable) {
         return itemRepository.findAllByCountGreaterThan(0, pageable)
+                .map(this::convertToItemResponse);
+    }
+
+    public Page<ItemResponse> getAllItemsByUser(User user, Pageable pageable) {
+        return itemRepository.findAllByUser(user, pageable)
                 .map(this::convertToItemResponse);
     }
 
@@ -53,6 +56,13 @@ public class ItemService {
         Optional<Item> optionalItem = itemRepository.findById(id);
         if (optionalItem.isPresent()) {
             Item item = optionalItem.get();
+
+            // user 검증
+            if (!user.getId().equals(item.getUser().getId())) {
+                throw new IllegalArgumentException("아이템 업데이트 실패: 유저가 아닙니다.");
+            }
+
+            // item 수정
             updateItemFromRequest(item, itemRequest);
             return convertToItemResponse(item);
         } else {
