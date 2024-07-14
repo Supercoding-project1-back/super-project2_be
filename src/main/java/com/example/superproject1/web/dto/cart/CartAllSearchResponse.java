@@ -13,4 +13,10 @@ public class CartAllSearchResponse {
     private Long itemId;
     @Schema(description = "물품 개수")
     private Integer count;
+    @Schema(description = "물품 이름")
+    private String itemName;
+    @Schema(description = "물품 가격")
+    private Integer price;
+    @Schema(description = "이미지 이름")
+    private String fileName;
 }

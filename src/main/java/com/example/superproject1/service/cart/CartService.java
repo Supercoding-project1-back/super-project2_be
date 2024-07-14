@@ -6,6 +6,8 @@ import com.example.superproject1.repository.cart.CartItemRepository;
 import com.example.superproject1.repository.cart.CartRepository;
 import com.example.superproject1.repository.item.Item;
 import com.example.superproject1.repository.item.ItemRepository;
+import com.example.superproject1.repository.users.User;
+import com.example.superproject1.repository.users.UserRepository;
 import com.example.superproject1.repository.users.userDetails.CustomUserDetails;
 import com.example.superproject1.service.exceptions.NotAcceptableException;
 import com.example.superproject1.web.dto.cart.CartAllSearchResponse;
@@ -30,8 +32,10 @@ public class CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
 
     public CartItemRequest addCartItem(Long userId ,CartItemRequest cartItemRequest) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("error"));
         Cart cart = cartRepository.findByUserId(userId);
         Long itemId = cartItemRequest.getItemId();
         System.out.println(itemId);
@@ -41,21 +45,23 @@ public class CartService {
 
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new RuntimeException("error"));
         Integer itemCount = item.getCount();
-        CartItem cartItem = cartItemRepository.findByCartAndItem(cart, item);
 
+        CartItem cartItem = cartItemRepository.findByCartAndItem(cart, item);
+        if (cart == null){
+            cart = Cart.builder().user(user).build();
+            cartRepository.save(cart);
+        }
         if(userItemCount > itemCount){
             throw new NotAcceptableException("물건 최대 개수는 " + itemCount + " 입니다.",itemCount.toString());
         }
         if(cartItem == null) {
-            CartItem isNullCartItem = CartItem.builder().item(item).cart(cart).count(itemCount).build();
+            CartItem isNullCartItem = CartItem.builder().item(item).cart(cart).count(userItemCount).build();
             cartItemRepository.save(isNullCartItem);
         }else{
-            Long cartItemId = cartItem.getId();
             cartItem.setCount(userItemCount);
             cartItemRepository.save(cartItem);
         }
         return cartItemRequest;
-
     }
 
     public List<CartAllSearchResponse> findCartItems(Long userId){
@@ -68,6 +74,10 @@ public class CartService {
                 .map(cartItem -> CartAllSearchResponse.builder()
                         .itemId(cartItem.getItem().getId())
                         .count(cartItem.getCount())
+                        .itemName(cartItem.getItem().getName())
+                        .price(cartItem.getItem().getPrice())
+                        // 이미지 url로 바꿔야함
+                        .fileName(cartItem.getItem().getFiles().get(0).getFileName())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -86,7 +96,5 @@ public class CartService {
         cartItemRepository.save(cartItem);
 
         return cartItemRequest;
-
-
     }
 }
